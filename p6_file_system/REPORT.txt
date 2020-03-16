@@ -1,0 +1,28 @@
+- How many disk reads/writers are issued in order to run both t0 and t1 on your
+implementation?
+  t0:nRead 560
+     nWrite 0
+  t1:nRead 1169
+     nWrite 171
+
+- Discuss techniques for reducing the number of disk accesses:
+
+    * at the block level
+    * at the file system level
+
+  Block Level: 
+  1. Since deivce->read function will read a whole section ,we can conbime multiple writes in a block together and write them at once instaed of write one or two byte at a time.
+  2. A block consists of two sections. When we do read or write, we may not read or write the whole block like readSector() or writeSector() (I did so in my implementation). 
+  We can just read or write to the corresponding sector, which will save 50% read/writes.
+  3. When writing to a big offset, we don't need to allocate blocks for previous unwritten blocks, so we can save writes.
+  File System level: 
+  1. The file system can cache recently read blocks in the memory, so if we want to read them again, 
+  we can read them from the cache instead of devices. (this would also bo problmatic in a shared file system)
+
+- Many of the BobFS APIs create new objects and return pointers to them. Who
+  should delete those objects? Can you come with a set of rules/guidelines
+  for determining when an object should be deleted? Explain
+  1. The users calls NewFile() or NewDirectory(), BobFS will create a new obejct and return it. In this case, the user should delete it after use.
+  2. The users calls findNode() and get a new object, the user should delete it after use too. They should not call find(root,"deep_purple") without a return value since they cannot delete it.
+  3. If the user forget to delete the objects, the obejcts will be deleted by default outside the scope of the function.
+  4. If the function is very long, heap can track blocks unseds for a long time and delete them when the heap is full.

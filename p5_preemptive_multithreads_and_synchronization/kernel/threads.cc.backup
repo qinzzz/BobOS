@@ -1,0 +1,125 @@
+#include "debug.h"
+#include "smp.h"
+#include "threads.h"
+#include "atomic.h"
+#include "future.h"
+
+
+Queue<TCB> readyQ;
+Queue<TCB> zombieQ;
+Queue<TCB> blockQ;
+static InterruptSafeLock ISL;
+TCB* active[] = {nullptr,nullptr,nullptr,nullptr}; // current TCB
+
+
+extern "C" void contextSwitch(uint32_t* saveArea, uint32_t* restoreArea);
+extern "C" void switchReg2Me(uint32_t* saveArea);
+extern "C" void switchCand2Reg(uint32_t* restoreArea);
+
+
+void thread_entry() {
+    ISL.lock();
+    auto me=active[SMP::me()];
+    ISL.unlock();
+    me->do_your_thing();
+    stop();
+}
+
+
+void stop() {
+    auto candidate = readyQ.remove(); 
+    ISL.lock();
+    auto mycore=SMP::me();
+    auto me = active[mycore];
+    ISL.unlock();
+
+    while (candidate == nullptr) {
+        asm ("pause");
+        candidate = readyQ.remove();
+    }
+    while(candidate->save_area[5]==0 ){
+        asm ("pause");
+        readyQ.add(candidate);
+        candidate = readyQ.remove();
+        while (candidate == nullptr) {
+            asm ("pause");
+            candidate = readyQ.remove();
+        }
+    }
+    
+    ISL.lock();
+    active[mycore] = candidate; 
+    me->save_area[5]=0;
+    ISL.unlock();
+
+    zombieQ.add(me);
+    contextSwitch(me->save_area, candidate->save_area); 
+}
+
+
+void threadsInit() {
+    active[0] = new FakeTCB();
+    active[1] = new FakeTCB();
+    active[2] = new FakeTCB();
+    active[3] = new FakeTCB();
+}
+
+
+void yield() {
+    /* delete stopped threads */
+    auto deadThreads = zombieQ.remove();
+    while (deadThreads!=nullptr){
+        if (deadThreads->save_area[5]==0){
+            zombieQ.add(deadThreads);
+        }
+        else
+            delete deadThreads;
+        deadThreads = zombieQ.remove();
+    }
+
+    ISL.lock();
+    auto mycore =SMP::me();
+    auto me = active[mycore];
+    ISL.unlock();
+
+    auto candidate = readyQ.remove(); //candidate coms from the first block in readyQ
+
+    // if (me->save_area[5]==0)
+    // {
+    //     // Debug::printf("1");
+    //     readyQ.add(me);
+    //     return;
+    // }
+        
+    if (candidate == nullptr || candidate == me) { /// ???????
+        // Debug::printf("2");
+        return; // readyQ is empty
+    }
+
+    // while(candidate->save_area[5]==0){
+    //     if(candidate == me)
+    //         return;
+    //     asm ("pause");
+    //     readyQ.add(candidate);
+    //     candidate = readyQ.remove(); 
+    //     if (candidate == nullptr) {
+    //         return;
+    //     }
+    // }
+    if (candidate->save_area[5]==0) {
+        // Debug::printf("3");
+        readyQ.add(candidate);
+        return;
+    }
+    
+
+    // now : candidate->save_area[5]= 1; 
+    ISL.lock();
+    active[mycore] = candidate;
+    me->save_area[5]=0;
+    ISL.unlock();
+
+    readyQ.add(me); 
+    // what if interrupt?
+    contextSwitch(me->save_area, candidate->save_area); 
+}

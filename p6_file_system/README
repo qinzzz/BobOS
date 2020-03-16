@@ -1,0 +1,130 @@
+Due:
+
+    Test: 3/7/2020 @ 11:59pm
+    Code: 3/8/2020 @ 11:59pm
+
+Assignment:
+~~~~~~~~~~~
+
+- Try to locate race conditions in my threading and semaphore code
+- Implement a simple file system (BobFS)
+- Contribute a test case
+- Answer the questions in REPORT.txt
+
+Test case rules:
+~~~~~~~~~~~~~~~~
+
+- Can't rely on the quality of the heap (max 100K allocated at any time)
+- Needs to run in less than 10 seconds
+- Should be named using your CSID
+
+    <CSID>.cc
+    <CSID>.ok
+
+Image files:
+~~~~~~~~~~~~
+
+Tests need image files emulating the contents of hard drives. Those
+files can get large (8323K each) so we have to follow some rules
+
+- only t0's image is committed / pushed
+- <test name>.img files are created by the Makefile
+- the Makefile will not delete those files automatically
+- please don't add those files to git
+- "git status" will show those files as untracked, keep it this way
+- you can remove the image files with a command like "rm -f *.img"
+
+BobFS
+~~~~~
+
+BobFS is an ext2-like file systems with major simplifications
+
+ - Only one block group
+ - Block size is always 1K
+ - i-node has 16 bytes:
+
+     * 16 bit i-node type (1 directory, 2 file)
+     * 16 bit nlinks
+     * 32 bit size
+     * 1 pointer to direct block
+     * 1 pointer to indirect block
+
+- Super-block has:
+
+     * 8 byte magic number "BOBFS439"
+     * i-number for root directory
+
+- A directory contains a list of entries. For each entry:
+
+     * i-number for entry (32 bits)
+     * name length  (32 bits)
+     * name (not zero terminated)
+
+   The entries in the directory are not sorted
+
+- Overall layout:
+
+   - super-block
+   - data block bitmap (1 block)
+   - inode bitmap (1 block)
+   - inodes
+   - data blocks
+
+
+t0.img contains the data image used in t0. You can browse it using tools
+like od. For example:
+
+    od -Ax -X t0.img
+
+hexdump is another command line tool
+
+The file system interface
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+class BobFS defines the file system interface. Look in kernel/bobfs.h
+for details
+
+Our implementation will be low-level with minimal error checking and no
+buffering or caching will be required
+
+Files:
+~~~~~~
+
+- t0.cc, t1.cc, ... (test cases to be left alone)
+- t0.ok, t1.ok, ... (expected output to be left alone)
+- Makefile, common.mak, kernel/Makefile (makefile to be left alone)
+
+- you're free to add, remove, or modify other files
+
+- t0.raw, t1.raw, ....     output from running tests
+- t0.out, t1.out, ....     clean output from running tests
+- t0.diff, t1.diff, ...    difference between k?.out and k?.ok
+- t0.img ...               the disk image for that test
+
+                            
+To compile:
+~~~~~~~~~~~
+
+    make
+
+To run tests:
+~~~~~~~~~~~~~
+
+    make -s clean test
+
+To run one test:
+~~~~~~~~~~~~~~~~
+
+    make -s <test name>.test
+
+To run by hand
+~~~~~~~~~~~~~~
+
+    ./run_qemu <test name>
+
+To attach with gdb
+~~~~~~~~~~~~~~~~~~
+
+    ./debug_qemu <test name>
+
+

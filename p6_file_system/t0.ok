@@ -1,0 +1,34 @@
+*** 0 root is a directory
+*** 0 root has 52 bytes
+*** 0 root has 1 links
+*** 0 directory:root(1)
+*** 0 file:abc(3,8000)
+*** 0 file:xyz(2,0)
+*** 0 file:pq(2,0)
+*** 0 directory:d1(1)
+*** 0 file:was_abc(3,8000)
+*** 0 file:was_xyz(2,0)
+*** 0 directory:d2(1)
+*** 0 file:was_pq(2,0)
+*** 0 file:abc2(3,8000)
+*** 0 xyz is a file
+*** 0 xyz has 0 bytes
+*** 0 xyz has 2 links
+*** 0 zztop is null
+*** 0 abc is a file
+*** 0 abc has 8000 bytes
+*** 0 abc has 3 links
+*** 0 d1 is a directory
+*** 0 d1 has 30 bytes
+*** 0 d1 has 1 links
+*** 0 abc2 is null
+*** 0 d2 is a directory
+*** 0 d2 has 26 bytes
+*** 0 d2 has 1 links
+*** 0 abc2 is a file
+*** 0 abc2 has 8000 bytes
+*** 0 abc2 has 3 links
+*** 0 read 8000 bytes
+*** 0 found 1000 zero values
+*** 0 found 1000 sequential values
+*** 0 done

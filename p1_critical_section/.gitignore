@@ -1,0 +1,9 @@
+*.d
+*.o
+*.raw
+*.out
+*.result
+*.diff
+/kernel/kernel
+kernel.bin
+kernel.img

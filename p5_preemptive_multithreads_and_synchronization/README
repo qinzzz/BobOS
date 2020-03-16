@@ -1,0 +1,82 @@
+Due:
+    test 2/27/2020 @ 11:59pm
+    code 2/28/2020 @ 11:59pm
+
+Assignment:
+~~~~~~~~~~~
+
+    - Implement preemptive multi-threading
+    - Implement blocking counting semaphores
+    - Donate a test case
+
+The semaphore API (in semaphore.h)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+class Semaphore {
+public:
+    // specifies initial value
+    Semaphore(uint32_t initialValue);
+
+    // atomic {
+    //    block until count > 0
+    //    count --
+    // }
+    // The implementation is not allowed to spin while waiting for the
+    // counter to change value
+    void down();
+
+    // count += 1
+    void up();
+};
+
+How preemption happens:
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The programmable interval timer (PIT) is programmed to generate an interrupt
+every 1ms. The PIT interrupt handler calls "yield".
+
+Scheduling:
+~~~~~~~~~~~
+
+- Can't make any assumptions about exact execution order
+- All threads must get a chance to run (no thread starvation)
+- All cores must participate in running ready threads
+
+To run tests:
+~~~~~~~~~~~~~
+
+    make clean test
+
+To make the output less noisy:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    make -s clean test
+
+To run one test
+~~~~~~~~~~~~~~~
+
+    make -s t0.test
+
+To run by hand
+~~~~~~~~~~~~~~
+
+    ./run_qemu t0
+
+To run with gdb
+~~~~~~~~~~~~~~~
+
+    ./debug_qemu t0
+
+       Then follow the instructions on the screen
+
+Generated files
+~~~~~~~~~~~~~~~
+
+For each test, a set of files will be generated:
+
+    <test>.raw          the raw output from running QEMU
+    <test>.out          the lines that start with *** from the raw output
+    <test>.diff         the difference between <test>.out and <test>.ok
+    <test>.result       pass or fail
+
+

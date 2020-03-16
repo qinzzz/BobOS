@@ -1,0 +1,36 @@
+* What new race conditions are introduced by enabling
+  interrupts and preemption?
+  With interrupt enabled, yield() can be called anywhere, so when a thread is yielding, it can be interrupted to yield again, thus causing chaos.
+  For example, if interrupt comes after readyQ.add(me), then the current thread yields again, and can be added to readyQ twice.
+  When trying to use active[i] to find the current active thread, interrupt may occur and we may find another thread instead of myself.
+  When we use spinlock to protect a process, interrupt can occur and force to change the thread, so it's no longer safe.
+
+* What changes did you make to your design/implementation
+  in order to defend against the new race conditions?
+  I disabled interrupt during the whole process of stop and yield. Therefore, threads will not yield multiple times.
+  I enabled interrupt in all possible lines where a thread can come back from contextswitch -- in yield and in thread_init. 
+  Because a stopped thread will never come back to stop, we don't need to enable interrupts there.
+
+* Semaphores are universal synchronization primitives. Explain.
+  Semaphore is a basic abstraction in a concurrent system and can be used to implement barriers, bounded buffers, mutex and many other synchronization primitives.
+  Semaphore allows threads to wait for a signal or some shared resource and during the waiting time, they can leave the core to other active threads.
+  For exmaple, if semaphore has a binary counter, then it is a mutex or a lock. If counter is set to a given number, then it can control how many threads can run at the same time.
+
+* Show to implement a blocking future using semaphores
+template <typename T>
+class Future {
+    Semaphore isReady{0};
+    T    t;
+public:
+    Future(){}
+    void set(T v) {
+        t = v;
+        isReady.up();
+    }
+    T get() {
+        isReady.down();
+        isReady.up();
+        return t;
+    }
+};
+

@@ -1,0 +1,31 @@
+The Queue class doesn't have an isEmpty method because it is dangerous, why?
+Because we cannot first check if the quese is empty and them remove a node, which will casue race conditions.
+For example, the queue can become emtpy after we check isEmpty, and we may be misled to perform invalid operations.
+So isEmpty method is useless when multi cores have access to a queue.
+
+How do you keep track of the active thread(s)?
+I use an array called 'active' to store the active thread of each core. The length of the array is equal to the number of cores.
+At first, the active array stores four fakeTCBs. Then every time a thread yields, the active thread becomes its candidate thread.
+
+When is it safe to delete a thread control block / stack?
+When the thread have completed the current work and called stop. 
+When it stops, the core switches to a new thread, begin running it and them the previous thread and block can be deleted.
+
+The Future class has a loop waiting for the "isReady" flag. Why is it a
+bad idea? can you think of a better way of doing it?
+Because when isReady is false, the future class put the current thread into the readyQ, but in fact it is not ready.
+So with a not ready thread in the readyQ, other cores will spend more time waiting for the really ready threads, and also increase emtpy waiting loops, slowing down the program.
+We may use a new queue like notreadyQ and put the waiting future threads into the queue.
+
+Read about and explain why you'd use the following x86 instructions:
+
+    pause
+        We can use pause to indicate that we are in a spin-lock loop, and use pause to wait for it to unlock. The processor can avoid the memory order violation om a waiting loop.
+    hlt
+        We can stop the current execution of the core, place it in a halted state and wait for further notice, e.g an interrupt.
+    mwait
+        We can use mwait together with monitor. Monitor can specify a memory range to look at, and mwait tells the system to halt until the memory is changed.
+        This instruction can be used when we want a certain write oepration to continue a halted core.
+
+Reference:
+[1] https://xem.github.io/minix86/manual/intel-x86-and-64-manual-vol3/o_fe12b1e2a880e0ce-302.html

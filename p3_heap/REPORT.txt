@@ -1,0 +1,23 @@
+- Describe your allocation strategy (first-fit, best-fit, worst-fit, ...)
+My allocate strategy is first-fit. I uses a freehead to mark the head of a double linked list, which containsall of the free nodes. 
+Each node have a header and a footer, both containing their size (in word) and if it is free(positive/negative).
+Then everytime i allocate some memory, I go through the linked list from head to find the first node
+that is big enough to allocate the required memory. I choose to allocate a new block from the end of the free block. 
+When i free a node, I will exam the previous and next nodes to see if I can merge the free nodes to become a larger one.
+
+- Why did you pick this strategy?
+First-fit is the quickest way to allocate memory. And it is easy to program, less likely to have bugs.
+With appropriate merge strategy, first-fit can work in complex malloc and free cases.
+For best-fit or worst-fit, we need O(n) to find the right node ( at least O(lgn) if sorted). This will lead to inefficiency in malloc operations.
+Also, best-fit would end up with many small blocks with 1 word or 2, that can never be used.
+According to test results, my strategy passes most valid tests, so it should be a reasonable strategy that can be used in most scenarios.
+
+- Describe a scenario in which best-fit will do better than first-fit
+If the free nodes are in descending order,like 100->99->98...->2->1, and we allocate nodes in increasing order, like malloc(1), malloc(2),..., malloc(100), 
+for best-fit, it can allocate all the nodes successfully; but for first fit, small allocated nodes will take up the space, and more large nodes cannot br allocated.
+
+- Describe a scenario in which worst-fit will do better than best-fit
+If the best-fit nodes are just 1 or 2 words larger than the memory to allocate, like split a free node of size 10 into a allocated node(size 8) and a free node (size 2).
+then they would still be allocated at the best-fit nodes, while wasting large numbers of small spaces. With so many small, unusable free nodes in the heap,
+space cannot be allocated efficiently.
+e.g., For a free node 3->5->7->9, do malloc(1),(3),(5),(7),(5) the worst-fit can allocate all the nodes successfully, while best-fit cannot allocate the last node with size 3.

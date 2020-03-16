@@ -1,0 +1,9 @@
+make $1.kernel
+
+echo "in a different window:"
+echo "   gdb kernel/kernel"
+echo "   target remote localhost:1234"
+echo "   set breakpoint, etc"
+echo "   continue"
+
+qemu-system-i386 -s -S -nographic -smp 1 --monitor none -drive file=kernel/kernel.img,index=0,media=disk,format=raw -device isa-debug-exit,iobase=0xf4,iosize=0x04

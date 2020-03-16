@@ -1,0 +1,44 @@
+*** 0 directory:root(1)
+*** 0 file:the_who(3,6000)
+*** 0 file:deep_purple(2,0)
+*** 0 file:pq(2,0)
+*** 0 directory:d1(1)
+*** 0 file:was_the_who(3,6000)
+*** 0 file:was_deep_purple(2,0)
+*** 0 directory:d2(1)
+*** 0 file:was_pq(2,0)
+*** 0 file:the_who2(3,6000)
+*** 0 root is a directory
+*** 0 root has 64 bytes
+*** 0 root has 1 links
+*** 0 directory:root(1)
+*** 0 file:the_who(3,6000)
+*** 0 file:deep_purple(2,0)
+*** 0 file:pq(2,0)
+*** 0 directory:d1(1)
+*** 0 file:was_the_who(3,6000)
+*** 0 file:was_deep_purple(2,0)
+*** 0 directory:d2(1)
+*** 0 file:was_pq(2,0)
+*** 0 file:the_who2(3,6000)
+*** 0 deep_purple is a file
+*** 0 deep_purple has 0 bytes
+*** 0 deep_purple has 2 links
+*** 0 zztop is null
+*** 0 the_who is a file
+*** 0 the_who has 6000 bytes
+*** 0 the_who has 3 links
+*** 0 d1 is a directory
+*** 0 d1 has 42 bytes
+*** 0 d1 has 1 links
+*** 0 the_who2 is null
+*** 0 d2 is a directory
+*** 0 d2 has 30 bytes
+*** 0 d2 has 1 links
+*** 0 the_who2 is a file
+*** 0 the_who2 has 6000 bytes
+*** 0 the_who2 has 3 links
+*** 0 read 6000 bytes
+*** 0 found 1000 zero values
+*** 0 found 1000 sequential values
+*** 0 done

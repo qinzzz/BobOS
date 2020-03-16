@@ -1,0 +1,7 @@
+*.raw
+*.out
+*.o
+*.d
+*.diff
+*.img
+*.result
